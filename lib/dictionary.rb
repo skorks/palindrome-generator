@@ -1,16 +1,15 @@
 class Dictionary
   def initialize(file)
     @original_words = {}
+    @original_words_reverse_keys = {}
     @working_words = []
     @working_words_reversed = []
     load_words file
     @working_words = @working_words.sort.uniq
     @working_words_reversed = @working_words_reversed.sort.uniq
 
-
-    
-    #    @illegal_words = {}
-    #    @legal_limbo = {}
+    @illegal_words = {}
+    @legal_limbo = {}
     #    @words_string = @words.join(" ")
     #    @reverse_words_string = @words_string.reverse
     #
@@ -23,10 +22,10 @@ class Dictionary
     File.open(file, "r").each do |word|
       if(word.index(/'/) == nil)
         real_word = word.chop.strip
-        working_word = real_word.downcase.gsub(/\s/, "")
+        working_word = real_word.downcase.gsub(/\s*/, "")
         reversed_working_word = working_word.reverse
         @original_words[working_word] = real_word
-        @original_words[reversed_working_word] = real_word
+        @original_words_reverse_keys[reversed_working_word] = real_word
         @working_words << working_word
         @working_words_reversed << reversed_working_word
       end
@@ -34,17 +33,54 @@ class Dictionary
   end
 
   def find_word_starting_with(prefix)
-#    index = @working_words.bsearch_first(prefix)
-#    current_word = @working_words[index]
-#    original_current_word = @original_words[current_word]
-#    [current_word, original_current_word]
+    find_word_by_prefix(prefix, @working_words, @original_words)
   end
 
-  def find_word_reverse_startig_with(prefix)
-#    index = @working_words_reversed.binary_search(prefix)
-#    current_word = @working_words_reversed[index]
-#    original_current_word = @original_words[current_word]
-#    [current_word, original_current_word]
+  def find_word_reverse_starting_with(reverse_prefix)
+    find_word_by_prefix(reverse_prefix,@working_words_reversed, @original_words_reverse_keys)
+  end
+
+  def find_word_by_prefix(prefix, working_words, original_words)
+    index_range = working_words.bsearch_range do |array_element|
+      array_element[0, prefix.length] <=> prefix
+    end
+
+    return nil if index_range.begin == index_range.end
+
+    index_range.each do |found_index|
+      possible_working_word = working_words[found_index]
+      possible_original_word = original_words[possible_working_word]
+      if legal(possible_original_word)
+        @illegal_words[possible_original_word] = ''
+        expire_limbo(prefix)
+        return possible_original_word 
+      end
+    end
+    nil
+  end
+
+  def legal(word)
+    @illegal_words[word] == nil && @legal_limbo[word] == nil
+  end
+
+  def move_to_legal_limbo(word)
+    @illegal_words.delete(word)
+    @legal_limbo[word] = 1000
+  end
+
+  def expire_limbo(prefix)
+#    @legal_limbo.keys.each do |key|
+#      if @legal_limbo[key] == 0
+#        @legal_limbo.delete(key)
+#      else
+#        @legal_limbo[key] -= 1
+#      end
+##      clean_key = key.downcase.gsub(/\s*/, "")
+##      clean_key_reversed = clean_key.reverse
+##      if clean_key[0, prefix.length] != prefix && clean_key_reversed[0, prefix.length] != prefix
+##        @legal_limbo[key] = nil
+##      end
+#    end
   end
 
 
@@ -86,12 +122,10 @@ class Dictionary
   #  end
   #
   #  def remove_illegal_word(word)
-  #    @illegal_words.delete(word)
+  #    
   #  end
   #
-  #  def add_to_legal_limbo(word)
-  #    @legal_limbo[word] = ''
-  #  end
+  
   #
   #  def empty_legal_limbo
   #    @legal_limbo = {}
