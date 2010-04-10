@@ -3,18 +3,18 @@ class PalindromicSentence
     @front_array = front
     @back_array = back
 
-    @front_string = array_as_string(@front_array).downcase.gsub(/\s*/, "")
-    @back_string = array_as_string(@back_array).downcase.gsub(/\s*/, "")
+    @front_string = array_as_string(@front_array)
+    @back_string = array_as_string(@back_array)
     @reverse_back_string = @back_string.reverse
     @undo_stack = []
   end
 
   def array_as_string(array)
-    array.join(" ").gsub(/\s/, '')
+    array.join("").downcase.gsub(/\s*/, '')
   end
 
   def palindrome?
-    string = (@front_string + @back_string).downcase.gsub(/\s*/, '')
+    string = @front_string + @back_string
     string == string.reverse
   end
 
@@ -27,7 +27,7 @@ class PalindromicSentence
   end
 
   def to_s
-    @front_array.join(" ") + " " + @back_array.join(" ")
+    @front_array.join(", ") + ", " + @back_array.join(", ")
   end
 
   def needs_word_at_front?
@@ -84,49 +84,10 @@ class PalindromicSentence
   end
 
   def current_stack
-#    puts to_s.downcase.inspect
-#    puts @front_string
-#    puts @reverse_back_string
-#    @undo_stack.inspect
-@undo_stack.size
+    #    puts to_s.downcase.inspect
+    #    puts @front_string
+    #    puts @reverse_back_string
+    #    @undo_stack.inspect
+    size
   end
-
-
-
-
-  
-  
-
-  #
-  #  def add_to_front?
-  #    @reverse_back_string.length > @front_string.length
-  #  end
-  #
-  #  def add_to_back?
-  #    @reverse_back_string.length < @front_string.length
-  #  end
-  #
-  #  def needs_rollback?
-  #    @reverse_back_string.length == @front_string.length
-  #  end
-  #
-
-  #
-  #  def reverse_word?
-  #    return add_to_back?
-  #  end
-  #
-
-  #
-
-  #
-  #  def current_stack
-  #    @undo_stack.inspect
-  #  end
-  #
-
-  #
-
-  #
-
 end
