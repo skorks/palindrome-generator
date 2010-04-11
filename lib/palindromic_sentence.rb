@@ -10,10 +10,13 @@ class PalindromicSentence
   end
 
   def array_as_string(array)
-    array.join("").downcase.gsub(/\s*/, '')
+    array.join("").downcase.gsub(PrefixDictionary.clean_word_regex, "")
   end
 
   def palindrome?
+#    if current_difference.length == 1
+#      puts "*"*100
+#    end
     string = @front_string + @back_string
     string == string.reverse
   end
@@ -46,7 +49,7 @@ class PalindromicSentence
 
   def roll_back
     word = @undo_stack.last
-    clean_word = word.downcase.gsub(/\s*/, '')
+    clean_word = word.downcase.gsub(PrefixDictionary.clean_word_regex, "")
     @undo_stack.delete(word)
 
     if @front_array.last == word
@@ -70,14 +73,14 @@ class PalindromicSentence
 
   def add_front(word)
     @front_array << word
-    clean_word = word.downcase.gsub(/\s*/, '')
+    clean_word = word.downcase.gsub(PrefixDictionary.clean_word_regex, "")
     @front_string = @front_string + clean_word
     @undo_stack << word
   end
 
   def add_back(word)
     @back_array.unshift(word)
-    clean_word = word.downcase.gsub(/\s*/, '')
+    clean_word = word.downcase.gsub(PrefixDictionary.clean_word_regex, "")
     @back_string = clean_word + @back_string
     @reverse_back_string = @reverse_back_string + clean_word.reverse
     @undo_stack << word
@@ -88,6 +91,9 @@ class PalindromicSentence
     #    puts @front_string
     #    puts @reverse_back_string
     #    @undo_stack.inspect
-    size
+    if perfect_palindrome?
+      puts "*" * 100
+    end
+    "#{size}"
   end
 end

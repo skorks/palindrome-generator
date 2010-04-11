@@ -17,4 +17,4 @@ require 'profiler'
 #dictionary = PrefixDictionary.new("/usr/share/dict/words")
 dictionary = PrefixDictionary.new("/home/alan/tmp/npdict.txt")
 generator = PalindromeGenerator.new(dictionary, :watch_stack => true, :output_file => "/home/alan/tmp/palindromes.txt")
-generator.generate(15000)
+generator.generate(20000)
